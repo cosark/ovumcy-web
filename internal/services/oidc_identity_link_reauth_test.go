@@ -149,6 +149,39 @@ func TestOIDCLoginServiceVerifyIdentityLinkReauthRefusesCrossUserClaim(t *testin
 	}
 }
 
+// TestOIDCLinkRefusalForAClaimedIdentityTellsItsHolderNothingSignInWouldNot is
+// the premise of the declared "already linked to another account" wording
+// (WEB-433 H5): the one exchange the link step-up refuses as claimed elsewhere
+// signs in, through the same service, to the account that holds it. The only
+// caller who can see the refusal holds the identity, and can enter that account.
+func TestOIDCLinkRefusalForAClaimedIdentityTellsItsHolderNothingSignInWouldNot(t *testing.T) {
+	t.Parallel()
+
+	now := time.Date(2026, 5, 13, 10, 0, 0, 0, time.UTC)
+	const holderID uint = 7
+	identities := &stubOIDCIdentityStore{
+		found:    true,
+		identity: models.OIDCIdentity{ID: 99, UserID: holderID, Issuer: "https://id.example.com", Subject: "claimed-elsewhere"},
+	}
+	client := &stubOIDCProviderClient{
+		enabled:  true,
+		exchange: makeReauthExchange("https://id.example.com", "claimed-elsewhere", now.Add(-1*time.Minute)),
+	}
+	users := &stubOIDCUserStore{byID: models.User{ID: holderID, Role: models.RoleOwner}}
+	service := NewOIDCLoginService(client, identities, users, nil)
+
+	if _, err := service.VerifyIdentityLinkReauth(context.Background(), "code", "verifier", "nonce", 42, 5*time.Minute, now); !errors.Is(err, ErrOIDCLinkFailed) {
+		t.Fatalf("expected the link step-up to refuse the claimed identity, got %v", err)
+	}
+	result, err := service.Authenticate(context.Background(), "code", "verifier", "nonce", now)
+	if err != nil {
+		t.Fatalf("sign-in with the claimed identity: %v", err)
+	}
+	if result.User.ID != holderID || users.lastLookupID != holderID {
+		t.Fatalf("sign-in reached user %d (looked up %d), want the holder %d", result.User.ID, users.lastLookupID, holderID)
+	}
+}
+
 // TestOIDCLoginServiceVerifyIdentityLinkReauthMapsALookupFault: a storage
 // fault on the cross-account check fails closed.
 func TestOIDCLoginServiceVerifyIdentityLinkReauthMapsALookupFault(t *testing.T) {
