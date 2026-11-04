@@ -49,7 +49,7 @@ This README describes the current `main` branch. The latest tagged release is `v
 
 ## Contents
 
-- [Quick Start](#quick-start) · [Configuration](#configuration)
+- [Quick Start](#quick-start) · [One-Click Deploy](#one-click-deploy) · [Configuration](#configuration)
 - [Demo and Screenshots](#demo-and-screenshots)
 - [Why Ovumcy](#why-ovumcy) · [Features](#features) · [How Predictions Work](#how-predictions-work)
 - [Reminders & Notifications](#reminders--notifications) · [Supported Languages](#supported-languages)
@@ -161,6 +161,10 @@ go run ./cmd/ovumcy
 ```
 
 Up and running? A ⭐ on the repository helps others find Ovumcy.
+
+## One-Click Deploy
+
+[![Deploy on RepoCloud](https://d16t0pc4846x52.cloudfront.net/deploylobe.svg)](https://repocloud.io/details/Ovumcy/)
 
 <a id="demo" name="demo"></a>
 <a id="screenshots" name="screenshots"></a>
