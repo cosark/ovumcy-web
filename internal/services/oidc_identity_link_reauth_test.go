@@ -149,11 +149,11 @@ func TestOIDCLoginServiceVerifyIdentityLinkReauthRefusesCrossUserClaim(t *testin
 	}
 }
 
-// TestOIDCLinkRefusalForAClaimedIdentityTellsItsHolderNothingSignInWouldNot is
-// the premise of the declared "already linked to another account" wording
-// (WEB-433 H5): the one exchange the link step-up refuses as claimed elsewhere
-// signs in, through the same service, to the account that holds it. The only
-// caller who can see the refusal holds the identity, and can enter that account.
+// TestOIDCLinkRefusalForAClaimedIdentityTellsItsHolderNothingSignInWouldNot pins
+// what the "already linked to another account" wording (WEB-433 H5) rests on for
+// an owner holder: the one exchange the link step-up refuses as claimed elsewhere
+// signs in, through the same service, to the account that holds it. A holder
+// row sign-in refuses (a legacy non-owner role) is outside it.
 func TestOIDCLinkRefusalForAClaimedIdentityTellsItsHolderNothingSignInWouldNot(t *testing.T) {
 	t.Parallel()
 
